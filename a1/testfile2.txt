@@ -1,4 +1,0 @@
-set the thing
-print the
-set the otherthing
-run testfile3.txt
