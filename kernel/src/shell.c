@@ -31,7 +31,6 @@ int parse(char input[]) {
         }
 
         tmp[j] = '\0';
-
         tokens[k] = strdup(tmp);
 
         i++; k++;
@@ -54,7 +53,7 @@ int shellUI() {
     while (TRUE) {
         
         while ((linelen = getline(&input, &BUFFER_SIZE_T - 1, stdin)) != -1) {
-	    errorCode = parse(input);
+			errorCode = parse(input);
             if (errorCode == -1) {
                 return errorCode;
             }

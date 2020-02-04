@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "shell.h"
 #include "pcb.h"
 #include "cpu.h"
@@ -63,20 +62,19 @@ void addToReadyQueue(struct ReadyQueue *q, struct PCB *pcb) {
 
 void myInit(char *filename) {
 	FILE *p;
+
 	if ((p = fopen(filename, "r")) == NULL) {
-		exit(1);
+		printf("File not found.");
 	}
 
-	int *start, *end;
-	addToRAM(p, start, end);
-
-	struct PCB *pcb = makePCB(*start, *end);
-
+	int start, end;
+	addToRAM(p, &start, &end);
+	struct PCB *pcb = makePCB(start, end);
 	addToReadyQueue(readyQueue, pcb);
 }
 
-void scheduler() {}
-
+void scheduler() {
+}
 
 int main() {
 

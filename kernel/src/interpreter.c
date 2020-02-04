@@ -3,7 +3,7 @@
 #include <string.h>
 #include "shell.h"
 #include "shellmemory.h"
-#include "kernel.c"
+#include "kernel.h"
 
 extern int BUFFER_SIZE;
 
@@ -74,7 +74,7 @@ int script(char *scriptName) {
 }
 
 int help() {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 6; i++) {
         struct Command command = commands[i];
         printf("%s        %s\n", command.name, command.description);
     }
@@ -104,8 +104,6 @@ int exec(char *args[], int numArgs) {
 	for (int i = 1; i < numArgs; i++) {
 		myInit(args[i]);
 	}
-
-	scheduler();
 }
 
 int print(char *args[]) {
