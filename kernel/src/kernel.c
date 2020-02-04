@@ -6,6 +6,8 @@
 #include "cpu.h"
 #include "ram.h"
 
+struct ReadyQueue *readyQueue;
+
 struct Node {
 	struct PCB *pcb;
 	struct Node *next;
@@ -56,10 +58,10 @@ void deQueue(struct ReadyQueue *q) {
 }
 
 void addToReadyQueue(struct ReadyQueue *q, struct PCB *pcb) {	
-	enQueue(q, pcb);
+	enQueue(readyQueue, pcb);
 }
 
-void myInit(struct ReadyQueue *q, char *filename) {
+void myInit(char *filename) {
 	FILE *p;
 	if ((p = fopen(filename, "r")) == NULL) {
 		exit(1);
@@ -70,13 +72,15 @@ void myInit(struct ReadyQueue *q, char *filename) {
 
 	struct PCB *pcb = makePCB(*start, *end);
 
-	addToReadyQueue(q, pcb);
+	addToReadyQueue(readyQueue, pcb);
 }
+
+void scheduler() {}
 
 
 int main() {
 
-	struct ReadyQueue *readyQueue = createQueue();
+	readyQueue = createQueue();
 	int errorCode = 1;
 	while ((errorCode = shellUI()) > 0) {
 		

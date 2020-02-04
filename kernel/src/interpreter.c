@@ -3,6 +3,7 @@
 #include <string.h>
 #include "shell.h"
 #include "shellmemory.h"
+#include "kernel.c"
 
 extern int BUFFER_SIZE;
 
@@ -18,11 +19,12 @@ struct Command {
 };
 
 struct Command commands[] = {
-    { "help", "              Displays all the commands" },
-    { "quit", "              Exits / terminates the shell with \"Bye!\"" },
-    { "set VAR STRING", "    Assigns a value to shell memory" },
-    { "print VAR", "         Displays the STRING assigned to VAR" },
-    { "run SCRIPT.TXT", "    Executes the file SCRIPT.TXT" }
+    { "help", "                      Displays all the commands" },
+    { "quit", "                      Exits / terminates the shell with \"Bye!\"" },
+    { "set VAR STRING", "            Assigns a value to shell memory" },
+    { "print VAR", "                 Displays the STRING assigned to VAR" },
+    { "run SCRIPT.TXT", "            Executes the file SCRIPT.TXT" },
+	{ "exec SCRIPT1 ... SCRIPTN", "  Executes scripts concurrently" }
 };
 
 void error(enum Error e) {
@@ -98,6 +100,14 @@ int set(char *args[], int numArgs) {
     return 0;
 }
 
+int exec(char *args[], int numArgs) {
+	for (int i = 1; i < numArgs; i++) {
+		myInit(args[i]);
+	}
+
+	scheduler();
+}
+
 int print(char *args[]) {
     char* value = getMem(args[1]);
 
@@ -117,12 +127,13 @@ int interpreter(char *tokens[], int n) {
     
     char *commandName = tokens[0];
 
-    if (strcmp(commandName, "help") == 0)          errorCode = help();
-    else if (strcmp(commandName, "quit") == 0)     quit();
-    else if (strcmp(commandName, "set") == 0)      errorCode = set(tokens, n);
-    else if (strcmp(commandName, "run") == 0)      errorCode = run(tokens);
-    else if (strcmp(commandName, "print") == 0)    errorCode = print(tokens);
-    else {
+    if (strcmp(commandName, "help") == 0)          	errorCode = help();
+    else if (strcmp(commandName, "quit") == 0)     	quit();
+    else if (strcmp(commandName, "set") == 0)      	errorCode = set(tokens, n);
+    else if (strcmp(commandName, "run") == 0)      	errorCode = run(tokens);
+    else if (strcmp(commandName, "print") == 0)    	errorCode = print(tokens);
+    else if (strcmp(commandName, "exec") == 0)	   	errorCode = exec(tokens, n);
+	else {
         error(UNKNOWN_COMMAND);
         errorCode = 1;
     }
