@@ -12,8 +12,7 @@ void run_cpu(struct CPU *cpu, int end) {
 
 	for (int i = 0; i < cpu->quanta; i++) {
 		if ((cpu->IP) + i >= end) break;
-		char *instruction = memGet(cpu->IP + i);
-		cpu->IR[i] = instruction;
+		cpu->IR[i] = memGet(cpu->IP + i);
 	}
 
 	for (int j = 0; j < cpu->quanta; j++) {

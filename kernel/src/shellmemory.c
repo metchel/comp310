@@ -10,7 +10,6 @@ struct MEM {
 struct MEM shellMemory[1024];
 
 void setMem(char *key, char *value) {
-	printf("setting key: %s , value: %s", key, value);
 	for (int i = 0; i < 1024; i++) {
         if (shellMemory[i].key == NULL) {
             shellMemory[i].key = strdup(key);

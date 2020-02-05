@@ -1,0 +1,2 @@
+help
+run file6.txt

@@ -68,7 +68,6 @@ int script(char *scriptName) {
     }
 
     fclose(p);
-
     return errCode;
 }
 
@@ -104,6 +103,7 @@ int exec(char *args[], int numArgs) {
 		myInit(args[i]);
 	}
 	scheduler();
+    return 1;
 }
 
 int print(char *args[]) {
@@ -135,5 +135,7 @@ int interpreter(char *tokens[], int n) {
         error(UNKNOWN_COMMAND);
     }
 
+    for (int i = 0; i < n; i++) free(tokens[i]);
+    
     return errorCode;
 }
