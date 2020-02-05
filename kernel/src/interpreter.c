@@ -19,12 +19,12 @@ struct Command {
 };
 
 struct Command commands[] = {
-    { "help", "                      Displays all the commands" },
-    { "quit", "                      Exits / terminates the shell with \"Bye!\"" },
-    { "set VAR STRING", "            Assigns a value to shell memory" },
-    { "print VAR", "                 Displays the STRING assigned to VAR" },
-    { "run SCRIPT.TXT", "            Executes the file SCRIPT.TXT" },
-	{ "exec SCRIPT1 ... SCRIPTN", "  Executes scripts concurrently" }
+    { "help", "                          Displays all the commands" },
+    { "quit", "                          Exits / terminates the shell with \"Bye!\"" },
+    { "set VAR STRING", "                Assigns a value to shell memory" },
+    { "print VAR", "                     Displays the STRING assigned to VAR" },
+    { "run SCRIPT.TXT", "                Executes the file SCRIPT.TXT" },
+	{ "exec SCRIPT1 ... SCRIPTN", "      Executes scripts concurrently" }
 };
 
 void error(enum Error e) {
@@ -57,7 +57,6 @@ int script(char *scriptName) {
     fgets(line, BUFFER_SIZE - 1, p);
 
     while (!feof(p)) {
-        printf("%c %s", '$', line);
         errCode = parse(line);
 
         if (errCode != 0) {
@@ -76,7 +75,7 @@ int script(char *scriptName) {
 int help() {
     for (int i = 0; i < 6; i++) {
         struct Command command = commands[i];
-        printf("%s        %s\n", command.name, command.description);
+        printf("%s%s\n", command.name, command.description);
     }
     return 0;
 }
@@ -92,7 +91,7 @@ int set(char *args[], int numArgs) {
     strcpy(value, args[2]);
 
     for (int i = 3; i < numArgs; i++) {
-        strcat(value, " ");
+		strcat(value, " ");
         strcat(value, args[i]);
     }
 
@@ -104,6 +103,7 @@ int exec(char *args[], int numArgs) {
 	for (int i = 1; i < numArgs; i++) {
 		myInit(args[i]);
 	}
+	scheduler();
 }
 
 int print(char *args[]) {
@@ -133,7 +133,6 @@ int interpreter(char *tokens[], int n) {
     else if (strcmp(commandName, "exec") == 0)	   	errorCode = exec(tokens, n);
 	else {
         error(UNKNOWN_COMMAND);
-        errorCode = 1;
     }
 
     return errorCode;

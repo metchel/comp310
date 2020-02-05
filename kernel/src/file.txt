@@ -1,3 +1,2 @@
-help
-set the thing
-quit
+set a 1
+print a
