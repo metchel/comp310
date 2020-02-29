@@ -1,5 +1,0 @@
-set c 3
-print b
-print c
-set a 4
-print a

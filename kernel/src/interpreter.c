@@ -25,7 +25,7 @@ struct Command commands[] = {
     { "set VAR STRING", "                Assigns a value to shell memory" },
     { "print VAR", "                     Displays the STRING assigned to VAR" },
     { "run SCRIPT.TXT", "                Executes the file SCRIPT.TXT" },
-	{ "exec SCRIPT1 ... SCRIPTN", "      Executes scripts concurrently" }
+	{ "exec p1 p2 p3", "                 Executes scripts concurrently" }
 };
 
 void error(enum Error e) {

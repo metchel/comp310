@@ -4,7 +4,7 @@
 #include "interpreter.h"
 
 #define WELCOME "Welcome to the Etch-shell!"
-#define VERSION "Version 1.0 Created January 2020"
+#define VERSION "Version 1.1 Created February 2020"
 #define PROMPT  "$"
 
 int BUFFER_SIZE = 1024;
@@ -25,7 +25,7 @@ int parse(char input[], int flag) {
 
     while (input[i] != '\0' && input[i] != EOF &&  i < BUFFER_SIZE) {
         
-        for (j = 0; input[i] != '\0' && input[i] != ' ' && i < BUFFER_SIZE && input[i] != '\n'; i++, j++) {
+        for (j = 0; input[i] != '\0' && input[i] != ' ' && input[i] != '\r'  && i < BUFFER_SIZE && input[i] != '\n'; i++, j++) {
             tmp[j] = input[i];
         }
 
