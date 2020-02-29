@@ -3,7 +3,7 @@
 
 struct CPU {
 	int IP;
-	char *IR[1000];
+	char *IR[2];
 	int quanta;
 };
 

@@ -39,3 +39,11 @@ char *getMem(char *key) {
 
     return NULL;
 }
+
+void printShellMem() {
+	for (int i = 0; i < 1024; i++) {
+		if (shellMemory[i].key != NULL) {
+			printf("{ %s: %s }\n", shellMemory[i].key, shellMemory[i].value);	
+		}
+	}
+}

@@ -11,8 +11,7 @@ int BUFFER_SIZE = 1024;
 size_t BUFFER_SIZE_T = 1024;
 enum boolean { FALSE, TRUE };
 
-int parse(char input[]) {
-
+int parse(char input[], int flag) {
     if (input == NULL || input[0] == EOF) {
         return 1;
     }
@@ -36,6 +35,8 @@ int parse(char input[]) {
         i++; k++;
     }
 
+	if (flag) k--;
+
     return interpreter(tokens, k);
 }
 
@@ -53,7 +54,7 @@ int shellUI() {
     while (TRUE) {
         
         while ((linelen = getline(&input, &BUFFER_SIZE_T - 1, stdin)) != -1) {
-			errorCode = parse(input);
+			errorCode = parse(input, 0);
             if (errorCode == -1) {
                 return errorCode;
             }

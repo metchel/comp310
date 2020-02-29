@@ -1,2 +1,2 @@
-int parse(char *input);
+int parse(char *input, int flag);
 int shellUI();

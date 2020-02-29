@@ -10,7 +10,8 @@ extern int BUFFER_SIZE;
 enum Error {
     UNKNOWN_COMMAND,
     SCRIPT_NOT_FOUND, 
-    VARIABLE_DOES_NOT_EXIST
+    VARIABLE_DOES_NOT_EXIST,
+	INVALID_ARGS
 };
 
 struct Command {
@@ -38,6 +39,8 @@ void error(enum Error e) {
         case VARIABLE_DOES_NOT_EXIST:
             printf("Variable does not exist\n");
             break;
+		case INVALID_ARGS:
+			printf("Invalid arguments\n");
         default:
             break;
     }
@@ -57,7 +60,7 @@ int script(char *scriptName) {
     fgets(line, BUFFER_SIZE - 1, p);
 
     while (!feof(p)) {
-        errCode = parse(line);
+        errCode = parse(line, 0);
 
         if (errCode != 0) {
             fclose(p);
@@ -86,7 +89,12 @@ void quit() {
 
 int set(char *args[], int numArgs) {
 
-    char value[1024];
+	if (numArgs < 3) {
+		error(INVALID_ARGS);
+		return 1;
+	}
+    
+	char value[1024];
     strcpy(value, args[2]);
 
     for (int i = 3; i < numArgs; i++) {
@@ -95,7 +103,8 @@ int set(char *args[], int numArgs) {
     }
 
     setMem(args[1], value);
-    return 0;
+    printShellMem();
+	return 0;
 }
 
 int exec(char *args[], int numArgs) {

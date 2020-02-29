@@ -21,7 +21,7 @@ void run_cpu(struct CPU *cpu, int end) {
 			break;
 		}
 		char *command = cpu->IR[j];
-		parse(command);
+		parse(command, 1);
 		cpu->IP++;
 	}
 }
