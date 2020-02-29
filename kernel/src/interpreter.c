@@ -103,7 +103,6 @@ int set(char *args[], int numArgs) {
     }
 
     setMem(args[1], value);
-    printShellMem();
 	return 0;
 }
 
