@@ -1,0 +1,3 @@
+set the thing
+set theother thing
+print the
