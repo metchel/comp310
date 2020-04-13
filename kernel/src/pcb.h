@@ -1,3 +1,6 @@
+#ifndef PCB_H
+#define PCB_H
+
 struct PCB {
 	int PC;
 	int PC_page;
@@ -9,3 +12,5 @@ struct PCB {
 };
 
 struct PCB* makePCB(int page_start, int pages_max);
+
+#endif

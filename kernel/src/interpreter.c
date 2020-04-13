@@ -111,7 +111,6 @@ int exec(char *args[], int numArgs) {
 	for (int i = 1; i < numArgs; i++) {
 		myInit(args[i]);
 		char* filename = strdup(args[i]);
-		printf("Executing %s\n", filename);
 		
 		FILE *f = fopen(filename, "r");
 

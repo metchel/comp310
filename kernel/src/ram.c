@@ -15,7 +15,7 @@ int next_ram_cell_index() {
 }
 
 void printRAM() {
-	for (int i = 0; i < 39; i++) printf("|%s", ram[i]);
+	for (int i = 0; i < 40; i++) printf("|%d: %s", i, ram[i]);
 	printf("\n");
 }
 

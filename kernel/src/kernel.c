@@ -66,10 +66,10 @@ void myInit(char *filename) {
 int pageFault(struct PCB* pcb) {
 	// Go to the next page
 	
-	freeFrames(pcb->pageTable[pcb->PC_page]);
+	//freeFrames(pcb->pageTable[pcb->PC_page]);
 	pcb->PC_page++;
 
-	if (pcb->PC_page >= pcb->pages_max) {
+	if (pcb->PC_page - pcb->page_start >= pcb->pages_max) {
 		// The program is done. That was the last page.
 		return 0;
 	}
@@ -88,15 +88,20 @@ int pageFault(struct PCB* pcb) {
 		if (availableFrame >= 0) {
 			frame = availableFrame;
 		} else {
-			frame = findVictim(pcb);
+			victim = findVictim(pcb);
+			frame = victim;
+			if (frame == -1) {
+				printf("Error: memory full.");
+				return 0;
+			}
 		}
 		int pageNumber = pcb->PC_page;
 		char filename[64];
 		sprintf(filename, "BackingStore/PAGE_%d", pageNumber);
 		FILE *f = fopen(filename, "r");
 
-		loadPage(pageNumber, f, availableFrame);
-		updatePageTable(pcb, pageNumber, availableFrame, victim);
+		loadPage(pageNumber, f, frame);
+		updatePageTable(pcb, pageNumber, frame, victim);
 		
 		pcb->PC = pcb->pageTable[pcb->PC_page] * 4;
 		pcb->PC_offset = 0;
@@ -106,7 +111,7 @@ int pageFault(struct PCB* pcb) {
 }
 
 void scheduler() {
-	
+
 	while (head != NULL) {	
 		struct PCB *temp = head;
 		deQueue();
@@ -120,7 +125,7 @@ void scheduler() {
 			int pageFaultErrCode = pageFault(temp);
 			if (pageFaultErrCode == 0) {
 				// the program finished.
-				for (int i = 0; i < 10; i++) freeFrames(temp->pageTable[i]);				
+				//for (int i = 0; i < 10; i++) freeFrames(temp->pageTable[i]);				
 				free(temp);
 			} else {
 				// the program hasn't finished.

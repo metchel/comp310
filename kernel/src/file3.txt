@@ -1,3 +1,0 @@
-set c 11
-print c
-

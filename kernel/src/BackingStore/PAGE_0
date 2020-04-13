@@ -1,0 +1,4 @@
+help
+set mary 10
+set tom 20
+set bob mary

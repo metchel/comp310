@@ -44,15 +44,49 @@ int findFrame() {
   return -1;
 }
 
+int frameInPCB(int frameNo, struct PCB *p) {
+	int inPCB = 0;
+	for (int i = 0; i < 10; i++) {
+		// Check if the victim frame is owned by the PCB
+		if (p->pageTable[i] == frameNo) {
+			inPCB = 1;
+		} 
+	}
+
+	return inPCB;
+}
+
 // if findFrame returns -1
 // then we must find some random frame 
 // and 
 int findVictim(struct PCB *p) {
-  return 0;
+	// init random number generator
+	time_t t;
+	srand((unsigned) time(&t));
+	
+	int frameNo = rand() % 10;
+	int counter = 0;
+
+		while(frameInPCB(frameNo, p)) {
+			frameNo++;
+			counter++;
+			// All of the frames are full...
+			if (counter == 10) {
+				printf("Memory is full.");
+				return -1;
+			}
+	
+			if (frameNo > 9) {
+				frameNo = 0;
+			}		
+		}
+
+	return frameNo;
 }
 
 int updatePageTable(struct PCB *p, int pageNumber, int frameNumber, int victimFrame) {
 	p->pageTable[pageNumber] = frameNumber;
+	return 0;
 }
 
 int launcher(FILE *p) {
@@ -117,15 +151,22 @@ int launcher(FILE *p) {
 
 		FILE *f = fopen(filename, "r");
 
-		int availableFrame = findFrame();
-		if (availableFrame >= 0) {
-			loadPage(pageNumber, f, availableFrame);
-			pcb->pageTable[i] = availableFrame;
+		int frame = findFrame();
+		int victim = -1;
+		if (frame >= 0) {
+			loadPage(pageNumber, f, frame);
+		} else {
+			victim = findVictim(pcb);
+			frame = victim;
+			loadPage(pageNumber, f, frame);
 		}
+
+		updatePageTable(pcb, i, frame, victim);
 	}
 
 	// The PC should not be 0, this would mean frame 0.
 	// In fact it should be the first cell in the first frame that holds a page for this program.
+
 	pcb->PC = pcb->pageTable[0] * 4;
 
 	enQueue(pcb);
