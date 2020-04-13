@@ -3,25 +3,29 @@
 #include "cpu.h"
 #include "shell.h"
 
-void run_cpu(struct CPU *cpu, int end) {
+int run_cpu(struct CPU *cpu) {
 	
-	if (cpu->IP >= end) {
-		cpu->IP = -1;
-		return;
+	// PAGE FAULT
+	if (cpu->offset >= 4) {
+		return -1;
 	}
 
 	for (int i = 0; i < cpu->quanta; i++) {
-		if ((cpu->IP) + i >= end) break;
-		cpu->IR[i] = memGet(cpu->IP + i);
+		if ((cpu->offset) + i >= 4) break;
+		cpu->IR[i] = memGet(cpu->IP + cpu->offset + i);
 	}
 
 	for (int j = 0; j < cpu->quanta; j++) {
-		if (cpu->IP >= end) {
-			cpu->IP = -1;
-			break;
+		// PAGE FAULT
+		if (cpu->offset >= 4) {
+			return -1;
 		}
 		char *command = cpu->IR[j];
-		parse(command, 1);
-		cpu->IP++;
+
+		// Only run commands that aren't dumb.
+		parse(command, 0);
+		cpu->offset++;
 	}
+
+	return 0;
 }

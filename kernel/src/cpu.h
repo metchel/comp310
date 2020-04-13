@@ -3,10 +3,11 @@
 
 struct CPU {
 	int IP;
+	int offset;
 	char *IR[2];
 	int quanta;
 };
 
-void run_cpu(struct CPU *cpu, int end);
+int run_cpu(struct CPU *cpu);
 
 #endif

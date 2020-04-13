@@ -4,7 +4,7 @@
 
 extern int BUFFER_SIZE;
 
-char *ram[1000];
+char *ram[40];
 
 int next_ram_cell_index() {
 	int i = 0;
@@ -15,7 +15,7 @@ int next_ram_cell_index() {
 }
 
 void printRAM() {
-	for (int i = 0; i < 999; i++) printf("|%s", ram[i]);
+	for (int i = 0; i < 39; i++) printf("|%s", ram[i]);
 	printf("\n");
 }
 
@@ -47,7 +47,7 @@ void addToRAM(FILE *p, int *start, int *end) {
 }
 
 void removeFromRAM(int start, int end) {
-	if (start < 0 || end > 999) {
+	if (start < 0 || end > 39) {
 		printf("Invalid RAM location");
 		return;		
 	}	
@@ -58,7 +58,32 @@ void removeFromRAM(int start, int end) {
 	}
 }
 
+void initRAM() {
+	for (int i = 0; i < 40; i++) {
+		ram[i] = NULL;
+	}
+}
+
 char *memGet(int cell) {
-	if (cell < 0 || cell > 999) return NULL;
-	return strdup(ram[cell]);
+	if (cell < 0 || cell > 39) return NULL;
+	if (ram[cell] == NULL) {
+		return NULL;
+	} else {
+		return strdup(ram[cell]);
+	}
+}
+
+void memSet(int cell, char* value) {
+	if (ram[cell] != NULL) {
+		free(ram[cell]);
+	}
+	if (value == NULL) {
+		ram[cell] = NULL;
+		return;
+	}
+	ram[cell] = strdup(value);
+}
+
+char* getRAM(int cell) {
+	return ram[cell];
 }

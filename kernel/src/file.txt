@@ -1,3 +1,11 @@
-set the thing
-set theother thing
-print the
+set a 5
+set b 9
+set c 11
+print a
+print b
+print c
+set d 15
+print d
+set e 19
+print e
+

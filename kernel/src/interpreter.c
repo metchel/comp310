@@ -1,9 +1,9 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "shell.h"
 #include "shellmemory.h"
 #include "kernel.h"
+#include "memorymanager.h"
 
 extern int BUFFER_SIZE;
 
@@ -98,7 +98,7 @@ int set(char *args[], int numArgs) {
     strcpy(value, args[2]);
 
     for (int i = 3; i < numArgs; i++) {
-		strcat(value, " ");
+				strcat(value, " ");
         strcat(value, args[i]);
     }
 
@@ -107,11 +107,19 @@ int set(char *args[], int numArgs) {
 }
 
 int exec(char *args[], int numArgs) {
+	
 	for (int i = 1; i < numArgs; i++) {
 		myInit(args[i]);
+		char* filename = strdup(args[i]);
+		printf("Executing %s\n", filename);
+		
+		FILE *f = fopen(filename, "r");
+
+		launcher(f);
 	}
+
 	scheduler();
-    return 1;
+  return 1;
 }
 
 int print(char *args[]) {

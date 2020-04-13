@@ -1,56 +1,9 @@
 #include "ram.h"
 #include "pcb.h"
 #include "memorymanager.h"
-#include "logging.h"
-
+#include "kernel.h"
 // global BackingStore page counter.
-int INCREMENT = 0;
-
-int launcher(FILE *p) {
-  writeLog("Launching...");
-  
-  int BUFFER_SIZE = 1024;
-  int linecounter = 0;
-
-  FILE *page = NULL;
-
-  char linebuffer[1024];
-
-  while (!feof(p)) {
-    if (linecounter % 4 == 0) {
-
-      INCREMENT++;
-
-      if (page != NULL) fclose(page);
-
-      char buffer1[64] = "BackingStore/";
-      char buffer2[32];
-
-      sprintf(buffer2, "PAGE_%d", INCREMENT - 1);
-
-      char* filename = strcat(buffer1, buffer2);
-
-      page = fopen(filename, "w");
-    }
-    
-    // read a line from the source file.
-    if (fgets(linebuffer, BUFFER_SIZE - 1, p) != NULL) {
-      // write the same line to the bs file.
-      fprintf(page, linebuffer, BUFFER_SIZE - 1);
-    }
-    
-    linecounter++;
-  }
-
-  // don't put code from different programs in the same page.
-  // this will make sure new programs start on a fresh page.
-  INCREMENT++;
-
-  // close the source file for others to read.
-  fclose(p);
-
-  return 0;
-}
+int INCREMENT = -1;
 
 int countTotalPages(FILE *f) {
   char lineBuffer[1024];
@@ -69,23 +22,22 @@ int countTotalPages(FILE *f) {
 }
 
 void loadPage(int pageNumber, FILE *f, int frameNumber) {
-  char filename[64];
-  sprintf(filename, "BackingStore/PAGE_%d", pageNumber);
-
-  f = fopen(filename, "r");
-  char lineBuffer[1024];
+	char lineBuffer[1024];
 
   for (int i = 0; i < 4; i++) {
-    if (fgets(lineBuffer, 1023, f) != NULL) {
-      memSet(4*frameNumber + i, lineBuffer);
-    }
-  }
+   	if (fgets(lineBuffer, 1023, f)) {
+			int cell = (4 * frameNumber) + i;
+			memSet(cell, lineBuffer);
+		}
+	}
+	
+	fclose(f);
 }
 
 int findFrame() {
-  for (int i = 0; i < 1000; i += 4) {
-    if (memGet(i) != NULL) {
-      return i;
+  for (int i = 0; i < 40; i += 4) {
+    if (memGet(i) == NULL) {
+      return i / 4;
     }
   }
 
@@ -100,5 +52,91 @@ int findVictim(struct PCB *p) {
 }
 
 int updatePageTable(struct PCB *p, int pageNumber, int frameNumber, int victimFrame) {
-  return 0;
+	p->pageTable[pageNumber] = frameNumber;
+}
+
+int launcher(FILE *p) {
+  int BUFFER_SIZE = 1024;
+  int linecounter = 0;
+
+  FILE *page = NULL;
+
+  char linebuffer[1024];
+
+	int startPage = INCREMENT + 1;
+
+	while (fgets(linebuffer, sizeof(linebuffer), p)) {
+    if (linecounter % 4 == 0) {
+
+      INCREMENT++;
+
+      if (page != NULL) fclose(page);
+
+      char buffer1[64] = "BackingStore/";
+      char buffer2[32];
+
+      sprintf(buffer2, "PAGE_%d", INCREMENT);
+
+      char* filename = strcat(buffer1, buffer2);
+
+      page = fopen(filename, "w");
+    }
+    
+    // read a line from the source file.
+    // write the same line to the bs file.
+    fprintf(page, linebuffer, BUFFER_SIZE - 1);
+    
+    linecounter++;
+  }
+
+	int endPage = INCREMENT;
+  // this will make sure new programs start on a fresh page.
+
+  // close the source file for others to read.
+  fclose(p);
+	fclose(page);
+
+	int n;
+
+	if (startPage == endPage) {
+		n = 1;
+	} else {
+		n = 2;
+	}
+
+	int numPages = endPage - startPage + 1;
+	struct PCB *pcb = makePCB(startPage, numPages);
+
+	// load the first 2 pages into RAM
+
+	char filename[64];
+
+	for (int i = 0; i < n; i++) {
+		int pageNumber = startPage + i;
+		sprintf(filename, "BackingStore/PAGE_%d", pageNumber);
+
+		FILE *f = fopen(filename, "r");
+
+		int availableFrame = findFrame();
+		if (availableFrame >= 0) {
+			loadPage(pageNumber, f, availableFrame);
+			pcb->pageTable[i] = availableFrame;
+		}
+	}
+
+	// The PC should not be 0, this would mean frame 0.
+	// In fact it should be the first cell in the first frame that holds a page for this program.
+	pcb->PC = pcb->pageTable[0] * 4;
+
+	enQueue(pcb);
+
+	return 0;
+}
+
+void freeFrames(int frame) {
+	if (frame < 0) return;
+	for (int i = 0; i < 4; i++) {
+		int cellNumber = frame * 4 + i;
+		memSet(cellNumber, NULL);
+	}	
 }

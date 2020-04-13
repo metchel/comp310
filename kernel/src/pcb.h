@@ -1,8 +1,11 @@
 struct PCB {
 	int PC;
-	int start;
-	int end;
+	int PC_page;
+	int PC_offset;
+	int pages_max;
+	int page_start;
+	int pageTable[10];
 	struct PCB *next;
 };
 
-struct PCB* makePCB(int start, int end);
+struct PCB* makePCB(int page_start, int pages_max);
